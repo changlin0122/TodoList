@@ -1,10 +1,16 @@
 <template>
   <div class="list">
-    <div v-for=" ( item, index) in list" :key="index">
+    <div v-for="(item, index) in list" :key="index">
       <div class="listitem">
         <input type="checkbox" v-model="item.complete">
-        {{ item.title }}
-        <button class="edit" @click="edit(item, index)">編輯</button>
+        <template v-if="!item.editing">
+          <span>{{ item.title }}</span>
+          <button class="edit" @click="startEditing(item)">編輯</button>
+        </template>
+        <template v-else>
+          <input v-model="item.title" @keyup.enter="endEditing(item)" @blur="endEditing(item)">
+          <button class="save" @click="endEditing(item)">保存</button>
+        </template>
         <button class="del" @click="del(item, index)">刪除</button>
       </div>
     </div>
@@ -12,27 +18,37 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 export default {
-  name:'TodoList',
+  name: 'TodoList',
   props: {
     list: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ['del'],
-  setup(props, ctx){
-    let del = (item, index) => {
-      ctx.emit('del', index)
-    }
+  setup(props, ctx) {
+    const del = (item, index) => {
+      ctx.emit('del', index);
+    };
+
+    const startEditing = (item) => {
+      item.editing = true;
+    };
+
+    const endEditing = (item) => {
+      item.editing = false;
+    };
 
     return {
-      del
-    }
-  }
-}
+      del,
+      startEditing,
+      endEditing,
+    };
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -44,6 +60,10 @@ export default {
     height: 35px;
     line-height: 35px;
     position: relative;
+    span,input {
+      margin-left: 5px;
+      font-size: 14px;
+    }
     .edit {
       position: absolute;
       right: 60px;
