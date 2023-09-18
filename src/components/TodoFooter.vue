@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 export default {
   name:'TodoFooter',
   props: {
